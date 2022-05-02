@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<!--
+	@section COPYRIGHT
+	Copyright (C) 2021 Consequential Robotics Ltd
+	
+	@section AUTHOR
+	Consequential Robotics http://consequentialrobotics.com
+	
+	@section LICENSE
+	For a full copy of the license agreement, and a complete
+	definition of "The Software", see LICENSE in the MDK root
+	directory.
+	
+	Subject to the terms of this Agreement, Consequential
+	Robotics grants to you a limited, non-exclusive, non-
+	transferable license, without right to sub-license, to use
+	"The Software" in accordance with this Agreement and any
+	other written agreement with Consequential Robotics.
+	Consequential Robotics does not transfer the title of "The
+	Software" to you; the license granted to you is not a sale.
+	This agreement is a binding legal agreement between
+	Consequential Robotics and the purchasers or users of "The
+	Software".
+	
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+	OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+	OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+	
+-->
+
+<sdf version='1.5'>
+	<world name='default'>
+
+		<physics name='default_physics' default='0' type='ode'>
+			<max_step_size>0.001</max_step_size>
+			<real_time_factor>1</real_time_factor>
+			<real_time_update_rate>1000</real_time_update_rate>
+		</physics>
+
+		<scene>
+			<ambient>0.4 0.4 0.4 1</ambient>
+			<background>0.7 0.7 0.7 1</background>
+			<shadows>0</shadows>
+		</scene>
+
+		<light name='sun' type='directional'>
+			<cast_shadows>0</cast_shadows>
+			<pose frame=''>0 0 10 0 -0 0</pose>
+			<diffuse>0.8 0.8 0.8 1</diffuse>
+			<specular>0.1 0.1 0.1 1</specular>
+			<attenuation>
+				<range>1000</range>
+				<constant>0.9</constant>
+				<linear>0.01</linear>
+				<quadratic>0.001</quadratic>
+			</attenuation>
+			<direction>-0.5 0.5 -1</direction>
+		</light>
+
+		<include>
+			<uri>model://ground_plane</uri>
+			<pose>0 0 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<uri>model://miro_toy_ball</uri>
+			<pose>1.17628 3.43905 1.115 0 0 0</pose>
+		</include>
+
+		<include>
+			<uri>model://miro_model</uri>
+			<pose>0 0 1.115 0 0 0</pose>
+		</include>
+
+        <include>
+            <uri>model://mirocube</uri>
+            <pose>1.01306 0.113578 1.05249 0 -0 0</pose>
+        </include>
+
+		<include>
+			<name>miro_table-14</name>
+			<uri>model://miro_table</uri>
+			<pose>0 -0.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-15</name>
+			<uri>model://miro_table</uri>
+			<pose>1.45 -0.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-0</name>
+			<uri>model://miro_table</uri>
+			<pose>0 0 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-1</name>
+			<uri>model://miro_table</uri>
+			<pose>1.45 0 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-2</name>
+			<uri>model://miro_table</uri>
+			<pose>0 0.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-3</name>
+			<uri>model://miro_table</uri>
+			<pose>1.45 0.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-4</name>
+			<uri>model://miro_table</uri>
+			<pose>0.725 1.5 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-5</name>
+			<uri>model://miro_table</uri>
+			<pose>0.725 2.25 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-6</name>
+			<uri>model://miro_table</uri>
+			<pose>0.725 3 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-7</name>
+			<uri>model://miro_table</uri>
+			<pose>0.725 3.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-8</name>
+			<uri>model://miro_table</uri>
+			<pose>2.175 3 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-9</name>
+			<uri>model://miro_table</uri>
+			<pose>2.175 3.75 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-10</name>
+			<uri>model://miro_table</uri>
+			<pose>3.23 3.35 0 0 0 1.57</pose>
+		</include>
+
+		<include>
+			<name>miro_table-11</name>
+			<uri>model://miro_table</uri>
+			<pose>3.23 4.75 0 0 0 1.57</pose>
+		</include>
+
+		<include>
+			<name>miro_table-12</name>
+			<uri>model://miro_table</uri>
+			<pose>3.23 5.85 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_table-13</name>
+			<uri>model://miro_table</uri>
+			<pose>3.23 6.6 0 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-0</name>
+			<uri>model://miro_can</uri>
+			<pose>0.2 1.2 1.014 0 0 1</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-1</name>
+			<uri>model://miro_can</uri>
+			<pose>0.3 1.2 1.014 0 0 2</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-2</name>
+			<uri>model://miro_can</uri>
+			<pose>0.4 1.2 1.014 0 0 3</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-3</name>
+			<uri>model://miro_can</uri>
+			<pose>0.25 1.2 1.174 0 0 4</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-4</name>
+			<uri>model://miro_can</uri>
+			<pose>0.35 1.2 1.174 0 0 5</pose>
+		</include>
+
+		<include>
+			<name>miro_can-0-5</name>
+			<uri>model://miro_can</uri>
+			<pose>0.3 1.2 1.334 0 0 6</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-0</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 2.8 1.014 0 0 0</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-1</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 2.9 1.014 0 0 1</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-2</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 3.0 1.014 0 0 2</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-3</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 2.85 1.174 0 0 3</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-4</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 2.95 1.174 0 0 4</pose>
+		</include>
+
+		<include>
+			<name>miro_can-1-5</name>
+			<uri>model://miro_can</uri>
+			<pose>3.0 2.9 1.334 0 0 5</pose>
+		</include>
+
+		<include>
+			<name>miro_sign</name>
+			<uri>model://miro_sign</uri>
+			<pose>3.3 7.05 0 0 0 0</pose>
+		</include>
+
+
+
+		<light name='spot-light-0' type='spot'>
+      		<pose frame=''>2.30789 0.093 1.55469 0 0.641896 0</pose>
+      		<diffuse>0.5 0.5 0.5 1</diffuse>
+      		<specular>0.1 0.1 0.1 1</specular>
+      		<direction>0 0 -1</direction>
+      		<attenuation>
+        		<range>20</range>
+        		<constant>0.5</constant>
+        		<linear>0.01</linear>
+        		<quadratic>0.001</quadratic>
+      		</attenuation>
+      		<spot>
+      			<inner_angle>0.6</inner_angle>
+      			<outer_angle>0.8</outer_angle>
+      			<falloff>1.0</falloff>
+      		</spot>
+      		<cast_shadows>0</cast_shadows>
+    	</light>
+
+		<gravity>0 0 -9.8</gravity>
+		<magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+		<atmosphere type='adiabatic'/>
+
+		<spherical_coordinates>
+			<surface_model>EARTH_WGS84</surface_model>
+			<latitude_deg>0</latitude_deg>
+			<longitude_deg>0</longitude_deg>
+			<elevation>0</elevation>
+			<heading_deg>0</heading_deg>
+		</spherical_coordinates>
+
+		<gui fullscreen='0'>
+			<camera name='user_camera'>
+				<!--
+				<pose frame=''>1.40328 -0.966443 0.97483 0 0.45964 2.34021</pose>
+				-->
+				<pose frame=''>-0.373365 -0.8231 1.66421 -0 0.355638 0.94021</pose>
+				<view_controller>orbit</view_controller>
+				<projection_type>perspective</projection_type>
+			</camera>
+		</gui>
+
+	</world>
+</sdf>
