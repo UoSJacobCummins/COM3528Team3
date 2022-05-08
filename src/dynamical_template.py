@@ -181,8 +181,8 @@ class ActionSystem:
         percept = self.motivationalSystem.perceive()
         self.motivationalSystem.approach()
         # Need to toggle colours based on food or water.
-        self.miroActions.face_ball(rospy.Time.now(),[255.0,0.0,0.0])
-        self.miroActions.forward(rospy.Time.now())
+        #self.miroActions.face_ball(rospy.Time.now(),[255.0,0.0,0.0])
+        #self.miroActions.forward(rospy.Time.now())
         return percept
 
     def consume( self, eta ):
@@ -628,7 +628,8 @@ class MiroActions:
                 else:
                     # Successfully turned to face the ball
                     ball = True
-            print("SEARCHING BALL")
+            #print("SEARCHING BALL")
+            rospy.sleep(0.000001)
         self.drive(0,0)
         #self.velocity.twist.linear.x = 0
         #self.velocity.twist.angular.z = 0
