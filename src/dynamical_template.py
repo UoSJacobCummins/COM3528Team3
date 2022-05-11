@@ -5,6 +5,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import cost
 from enum import Enum
 
 
@@ -95,8 +96,9 @@ class Controller:
         
     def map(self, t, x, input_u = 0.0, input_v = 0.0 ): 
     # The evolution map for the dynamical system
-        g1 = lambda q1, q2, rho: -self.a1*q1 + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
-        g2 = lambda q1, q2, rho: -self.a2*q2 + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
+    # subtract 
+        g1 = lambda q1, q2, rho: -self.a1*q1 - cost.cost_constant_stimulus(DISTANCE[1], input_u) + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
+        g2 = lambda q1, q2, rho: -self.a2*q2 - cost.cost_constant_stimulus(DISTANCE[2], input_v) + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
         f = lambda q1, q2, rho: -4.0*((rho - self.rho1)*(rho - self.rho2)*(rho - (self.rho1+self.rho2)/2.0) + 
                                     (1-q1)*(rho - self.rho1)/2.0 + (1-q2)*(rho - self.rho2)/2.0)
 
@@ -147,7 +149,6 @@ class Controller:
         print("r2",r2)
         self.data['a'].append(self.eta1)
         self.data['b'].append(self.eta2)
-    
 
 class ActionSystem:
 # The action system manages the seach/follow/consume pattern and logic
