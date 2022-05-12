@@ -36,8 +36,6 @@ from cv_bridge import CvBridge, CvBridgeError  # ROS -> OpenCV converter
 
 DISTANCE = [100,100,100]
 DEPTH = -1
-CONSUMING_0 = False
-CONSUMING_1 = False
 
 class State(Enum):
 # Enumeration of the possible states of the actionsystem
@@ -63,10 +61,10 @@ class Controller:
         self.b1 = 50.0
         self.b2 = 50.0
         self.sigma = 10.0
-        self.epsilon = 0.01 
+        self.epsilon = 0.05 
         
         # ρ symbol is rho
-        self.rho1 = 0.0
+        self.rho1 = -1.0
         self.rho2 = 1.0
         self.h = 0.05 # small time step
         # Component classes
@@ -148,16 +146,16 @@ class Controller:
             
         #print("eta1 = " + str(self.eta1))
         r1 = self.hunger.activate( self.eta1 )
-        #print("eta2 = " + str(self.eta2))
+        # #print("eta2 = " + str(self.eta2))
         r2 = self.thirst.activate( self.eta2 )
 
         f = lambda t, x: self.map( t, x, r2*0.0, r1*0.0 )
         self.integrate( f )
 
-        #print("X0" + str(self.X[0]))
+        print("X[2]: " + str(self.X[2]) + ", eta1: " + str(self.eta1) + ", eta2: " + str(self.eta2) )
         #print("X1" + str(self.X[1]))
 
-        b_sigma = 20.0
+        b_sigma = 5.0
         self.eta1 = np.exp(-b_sigma*(self.X[2] - self.rho1)**2)
         self.eta2 = np.exp(-b_sigma*(self.X[2] - self.rho2)**2)
         
@@ -165,18 +163,8 @@ class Controller:
         #print("r2",r2)
         self.data['a'].append(self.eta1)
         self.data['b'].append(self.eta2)
-        global CONSUMING_0
-        global CONSUMING_1
-        if(CONSUMING_0):
-            self.data['total_r1'].append(0.1)
-            CONSUMING_0 = False
-        else:
-            self.data['total_r1'].append(0)
-        if(CONSUMING_1):
-            self.data['total_r2'].append(0.1)
-            CONSUMING_1 = False
-        else:
-            self.data['total_r2'].append(0)
+        self.data['total_r1'].append(r1)
+        self.data['total_r2'].append(r2)
 
 class ActionSystem:
 # The action system manages the seach/follow/consume pattern and logic
@@ -239,10 +227,10 @@ class ActionSystem:
         # The challenge is to define when something is close
         #print("Hello",self.motivationalSystem.currentPercept)
         if self.motivationalSystem.currentPercept == None:
-            print("IN THIS ONE")
+            #print("IN THIS ONE")
             self.state = State.SEARCH
         else:
-            print("DEPTH",DEPTH)
+            #print("DEPTH",DEPTH)
             if DEPTH < 1 and DEPTH > -1: # Adjust the threshold
                 self.state = State.CONSUME
             else:
@@ -264,7 +252,7 @@ class MotivationalSystem:
         self.miroActions = MiroActions()
 
     def activate( self, eta ):
-        print("eta",eta)
+        #print("eta",eta)
         if self.actionSystem.state == State.SEARCH:
             self.currentPercept = self.actionSystem.search(eta)
         elif self.actionSystem.state == State.FOLLOW:
