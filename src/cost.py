@@ -6,4 +6,4 @@ def cost(rotations):
 def cost_constant_stimulus(rotations, utility):
     if(rotations < 0):
         rotations = 0
-    return utility / cost(rotations)
+    return 50 * utility / cost(rotations)

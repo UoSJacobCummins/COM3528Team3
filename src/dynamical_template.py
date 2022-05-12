@@ -3,6 +3,7 @@
 # The class structure is as follows:
 # 
 
+from ast import Global
 import numpy as np
 import matplotlib.pyplot as plt
 import cost
@@ -35,6 +36,8 @@ from cv_bridge import CvBridge, CvBridgeError  # ROS -> OpenCV converter
 
 DISTANCE = [100,100,100]
 DEPTH = -1
+CONSUMING_0 = False
+CONSUMING_1 = False
 
 class State(Enum):
 # Enumeration of the possible states of the actionsystem
@@ -57,15 +60,15 @@ class Controller:
         # Parameters, check the main document
         self.a1 = 2.0
         self.a2 = 2.0
-        self.b1 = 30.0
-        self.b2 = 30.0
+        self.b1 = 50.0
+        self.b2 = 50.0
         self.sigma = 10.0
-        self.epsilon = 0.01  
+        self.epsilon = 0.01 
         
         # ρ symbol is rho
-        self.rho1 = 0.5
-        self.rho2 = 1
-        self.h = 0.005 # small time step
+        self.rho1 = 0.0
+        self.rho2 = 1.0
+        self.h = 0.05 # small time step
         # Component classes
         self.perceptualSystem = PerceptualSystem()
         self.hunger = HungerMotivationalSystem( self.perceptualSystem )
@@ -79,7 +82,7 @@ class Controller:
         
         self.data = {'E1':[], 'E2': [], 'rho': [], 'xi_r': [], 'xi_g': [], 
 					 'reward_g': [], 'reward_r': [], 'vel_l': [], 'vel_r':[],
-					 'a':[], 'b':[]}
+					 'a':[], 'b':[], 'total_r1' : [], 'total_r2' : []}
         
         self.miroActions = MiroActions()
         
@@ -97,10 +100,18 @@ class Controller:
     def map(self, t, x, input_u = 0.0, input_v = 0.0 ): 
     # The evolution map for the dynamical system
     # subtract 
-        g1 = lambda q1, q2, rho: -self.a1*q1 - cost.cost_constant_stimulus(DISTANCE[1], input_u) + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
-        g2 = lambda q1, q2, rho: -self.a2*q2 - cost.cost_constant_stimulus(DISTANCE[2], input_v) + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
+        # g1 = lambda q1, q2, rho: -self.a1*q1 - cost.cost_constant_stimulus(DISTANCE[1], input_u) + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
+        # g2 = lambda q1, q2, rho: -self.a2*q2 - cost.cost_constant_stimulus(DISTANCE[2], input_v) + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
+
+        g1 = lambda q1, q2, rho: -self.a1*q1 + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
+        g2 = lambda q1, q2, rho: -self.a2*q2 + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
         f = lambda q1, q2, rho: -4.0*((rho - self.rho1)*(rho - self.rho2)*(rho - (self.rho1+self.rho2)/2.0) + 
                                     (1-q1)*(rho - self.rho1)/2.0 + (1-q2)*(rho - self.rho2)/2.0)
+
+        calc_g1 = g1(x[0], x[1], x[2])
+        calc_g2 = g2(x[0], x[1], x[2])
+        #print("g1 = " + str(calc_g1))
+        #print("g2 = " + str(calc_g2))
 
         return np.array([self.epsilon*g1(x[0], x[1], x[2]),
                     self.epsilon*g2(x[0], x[1], x[2]),
@@ -118,8 +129,10 @@ class Controller:
         interval = duration / no_of_points
         time_points = np.arange(0, duration, interval).tolist()
         #print(time_points)
-        plt.plot(time_points,self.data['a'], label='Object a (hunger)')
-        plt.plot(time_points,self.data['b'], label='Object b (thirst)')
+        plt.plot(time_points,self.data['a'], label='Eta 1')
+        plt.plot(time_points,self.data['b'], label='Eta 2')
+        plt.plot(time_points,self.data['total_r1'], label='Total eats')
+        plt.plot(time_points,self.data['total_r2'], label='Total drinks')
         plt.xlabel("Time")
         plt.ylabel("eta")
         plt.legend()
@@ -133,22 +146,37 @@ class Controller:
         global DISTANCE 
         DISTANCE = self.miroActions.distance_of_objects()
             
-        print("eta1")
+        #print("eta1 = " + str(self.eta1))
         r1 = self.hunger.activate( self.eta1 )
-        print("eta2")
+        #print("eta2 = " + str(self.eta2))
         r2 = self.thirst.activate( self.eta2 )
 
-        f = lambda t, x: self.map( t, x, r1, r2 )
+        f = lambda t, x: self.map( t, x, r2*0.0, r1*0.0 )
         self.integrate( f )
+
+        #print("X0" + str(self.X[0]))
+        #print("X1" + str(self.X[1]))
 
         b_sigma = 20.0
         self.eta1 = np.exp(-b_sigma*(self.X[2] - self.rho1)**2)
         self.eta2 = np.exp(-b_sigma*(self.X[2] - self.rho2)**2)
         
-        print("r1",r1)
-        print("r2",r2)
+        #print("r1",r1)
+        #print("r2",r2)
         self.data['a'].append(self.eta1)
         self.data['b'].append(self.eta2)
+        global CONSUMING_0
+        global CONSUMING_1
+        if(CONSUMING_0):
+            self.data['total_r1'].append(0.1)
+            CONSUMING_0 = False
+        else:
+            self.data['total_r1'].append(0)
+        if(CONSUMING_1):
+            self.data['total_r2'].append(0.1)
+            CONSUMING_1 = False
+        else:
+            self.data['total_r2'].append(0)
 
 class ActionSystem:
 # The action system manages the seach/follow/consume pattern and logic
@@ -161,6 +189,10 @@ class ActionSystem:
         # Modulate the search action by eta, you can choose to either set a hard 
         # threshold or a soft activation in which the ghost of each motivational system
         # remains but feeble
+
+        if(eta < 0.2):
+            return None
+
         random_action = random.randint(0,10)
         if random_action < 5:
             # Move forward.
@@ -170,15 +202,18 @@ class ActionSystem:
             self.miroActions.rotate(rospy.Time.now())
         percept = self.motivationalSystem.perceive()
         self.motivationalSystem.express( eta )
-        print("search",percept)
+        #print("search",percept)
         if percept is None:
             print('Doing search')
         else:
             return percept
 
     def follow( self, eta ):
+        if(eta < 0.2):
+            return None
+
         self.motivationalSystem.express( eta )
-        print('Pursuing the percept')
+        #print('Pursuing the percept')
         percept = self.motivationalSystem.perceive()
         self.motivationalSystem.approach()
         # Need to toggle colours based on food or water.
@@ -190,6 +225,9 @@ class ActionSystem:
         # Consuming activates action patterns when the target has been achieved
         # In this case the function returns the consumed reward used as forcing term in
         # the dynamics
+        if(eta < 0.2):
+            return None
+
         self.motivationalSystem.express( eta )
         r = self.motivationalSystem.consume( eta )
         print('Consuming')
@@ -199,7 +237,7 @@ class ActionSystem:
     def changeState( self ):
         # This function implements the finite state machine for the actions
         # The challenge is to define when something is close
-        print("Hello",self.motivationalSystem.currentPercept)
+        #print("Hello",self.motivationalSystem.currentPercept)
         if self.motivationalSystem.currentPercept == None:
             print("IN THIS ONE")
             self.state = State.SEARCH
@@ -295,6 +333,8 @@ class HungerMotivationalSystem(MotivationalSystem):
     def consume( self, eta ):
         print ("Eating")
         # define what is the reward based on the interaction with the target
+        global CONSUMING_0
+        CONSUMING_0 = True
         r = 0
         return r 
 
@@ -329,6 +369,8 @@ class ThirstMotivationalSystem(MotivationalSystem):
     def consume( self, eta ):
         print ("Drinking")
         # define what is the reward based on the interaction with the target
+        global CONSUMING_1
+        CONSUMING_1 = True
         r = 0
         return r
 
@@ -440,8 +482,8 @@ class MiroActions:
                 pixel_width = pixel_width_one
             if pixel_width:
                 colour_distances[i] = self.distance_to_camera(KNOWN_WIDTH,FOCAL_LENGTH,pixel_width)
-        print(self.colours)
-        print(colour_distances)
+        #print(self.colours)
+        #print(colour_distances)
         return colour_distances
     
     def distance_to_camera(self, knownWidth, focalLength, perWidth):
@@ -558,7 +600,7 @@ class MiroActions:
         mask_on_image = cv2.bitwise_and(im_hsv, im_hsv, mask=mask)
         
         width = sum(mask.any(axis=0))
-        print(' width:', width)
+        #print(' width:', width)
         #cv2.imshow('image', mask)
         #cv2.waitKey()
         return width
@@ -584,7 +626,7 @@ class MiroActions:
         self.vel_pub.publish(msg_cmd_vel)
     
     def face_ball(self, t0, colour):
-        print("MiRo finding ball")
+        #print("MiRo finding ball")
         while rospy.Time.now() < t0 + self.ACTION_DURATION:
             ball = False
         
@@ -637,13 +679,13 @@ class MiroActions:
         #self.pub_cmd_vel.publish(self.velocity)
         
     def forward(self, t0):
-        print("MiRo moving forward")
+        #print("MiRo moving forward")
         while rospy.Time.now() < t0 + self.ACTION_DURATION:
             self.drive(0.2,0.2)
         self.drive(0,0)
         
     def rotate(self, t0):
-        print("MiRo rotating")
+        #print("MiRo rotating")
         while rospy.Time.now() < t0 + self.ACTION_DURATION:
             self.drive(-0.1,0.1)
         self.drive(0,0)
