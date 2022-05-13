@@ -202,7 +202,7 @@ class MiroController:
 
             #print(t)
             
-            if t > 300.0:
+            if t > 100.0:
                 self.running = False
         # Plot the results at the end. Commented out as no plot function has
         # been designed.

@@ -98,11 +98,11 @@ class Controller:
     def map(self, t, x, input_u = 0.0, input_v = 0.0 ): 
     # The evolution map for the dynamical system
     # subtract 
-        # g1 = lambda q1, q2, rho: -self.a1*q1 - cost.cost_constant_stimulus(DISTANCE[1], input_u) + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
-        # g2 = lambda q1, q2, rho: -self.a2*q2 - cost.cost_constant_stimulus(DISTANCE[2], input_v) + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
+        g1 = lambda q1, q2, rho: -self.a1*q1 - cost.cost_constant_stimulus(DISTANCE[1], input_u) + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
+        g2 = lambda q1, q2, rho: -self.a2*q2 - cost.cost_constant_stimulus(DISTANCE[2], input_v) + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
 
-        g1 = lambda q1, q2, rho: -self.a1*q1 + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
-        g2 = lambda q1, q2, rho: -self.a2*q2 + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
+        #g1 = lambda q1, q2, rho: -self.a1*q1 + self.b1*(1.0 - q1)*np.exp(-self.sigma*(rho - self.rho1)**2)*(1.0 + input_u)
+        #g2 = lambda q1, q2, rho: -self.a2*q2 + self.b2*(1.0 - q2)*np.exp(-self.sigma*(rho - self.rho2)**2)*(1.0 + input_v)
         f = lambda q1, q2, rho: -4.0*((rho - self.rho1)*(rho - self.rho2)*(rho - (self.rho1+self.rho2)/2.0) + 
                                     (1-q1)*(rho - self.rho1)/2.0 + (1-q2)*(rho - self.rho2)/2.0)
 
@@ -127,13 +127,13 @@ class Controller:
         interval = duration / no_of_points
         time_points = np.arange(0, duration, interval).tolist()
         #print(time_points)
-        plt.plot(time_points,self.data['a'], label='Eta 1')
-        plt.plot(time_points,self.data['b'], label='Eta 2')
-        plt.plot(time_points,self.data['total_r1'], label='Total eats')
-        plt.plot(time_points,self.data['total_r2'], label='Total drinks')
+        plt.plot(time_points,self.data['a'], label='Eta 1', color='#93E16F')
+        plt.plot(time_points,self.data['b'], label='Eta 2',color='#6AC0E5')
+        plt.plot(time_points,self.data['total_r1'], label='System eats',color='#008000')
+        plt.plot(time_points,self.data['total_r2'], label='System drinks',color='#03086D')
         plt.xlabel("Time")
         plt.ylabel("eta")
-        plt.legend()
+        plt.legend(loc="upper right")
         plt.show()
 
 
