@@ -200,9 +200,9 @@ class MiroController:
             plt.pause(0.01)
             t += h
 
-            print(t)
+            #print(t)
             
-            if t > 40.0:
+            if t > 300.0:
                 self.running = False
         # Plot the results at the end. Commented out as no plot function has
         # been designed.
